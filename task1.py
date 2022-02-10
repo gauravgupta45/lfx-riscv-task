@@ -47,22 +47,22 @@ def add_mul_craw():
 	label_name = "add_mul_craw"	
 
 	# since, write is happening first followed by read -- RAW -- we will assign the destination reg to a.
-	assign_dest_reg = "a=rd : "
+	dest_reg_assign = "a=rd : "
 
-	# rest of the assigns will be don't care, as we are reading.
+	# rest of the assigns will be don't care.
 	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
-	str_assign = "[" + assign_dest_reg + dontcare_assign + "]"
+	str_assign = "[" + dest_reg_assign + dontcare_assign + "]"
 
-	# since this is a consuming inst, we need to compare src reg with rd of previous instr.
-	src_reg_cond = "rs1==a or rs2==a"
-	str_src_reg_cond = ""
+	# since this is a consuming instr, we need to compare src reg with rd of previous instr.
+	cond_src_reg = "rs1==a or rs2==a"
+	cond_str_src_reg = ""
 	for i in range(queue_len-1):
-		str_src_reg_cond += " : " + src_reg_cond
+		cond_str_src_reg += " : " + cond_src_reg
 
 	# first instruction's condition check will always be don't care, rest all will be checking the source reg
 	dontcare_cond = dont_care
 
-	str_cond = "[" + dontcare_cond + str_src_reg_cond + "]"
+	str_cond = "[" + dontcare_cond + cond_str_src_reg + "]"
 
 	# create the final cross_comb_str
 	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
@@ -72,19 +72,19 @@ def add_mul_ncraw():
 	label_name = "add_mul_ncraw"
 
 	# since, write is happening first followed by read -- RAW -- we will assign the destination reg to a.
-	assign_dest_reg = "a=rd : "
+	dest_reg_assign = "a=rd : "
 
-	# rest of the assigns will be don't care, as we are reading.
+	# rest of the assigns will be don't care
 	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
-	assign_str = "[" + assign_dest_reg + dontcare_assign + "]"
+	assign_str = "[" + dest_reg_assign + dontcare_assign + "]"
 
-	# since this is a non-consuming inst, result of prev instruction doesn't matter.
+	# since, we are reading in the last instruction, we will check the source reg.
 	cond_src_reg = "rs1==a or rs2==a"
 	cond_str_src_reg = ""
 	for i in range(1):
 		cond_str_src_reg += " : " + cond_src_reg
 
-	# for non-consuming instructions, all checks except last, are don't care
+	# since this is a non-consuming instr, result of prev instruction doesn't matter.
 	dontcare_cond = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
 
 	str_cond = "[" + dontcare_cond + cond_str_src_reg + "]"
@@ -97,17 +97,108 @@ def add_mul_ncraw():
 def add_mul_cwar():
 	label_name = "add_mul_cwar"
 
+	# since, read is happening first followed by write -- WAR -- we will assign the source reg(s) to a/b.
+	dest_reg_assign = "a=rs1; b=rs2 : "
+
+	# rest of the assigns will be don't care.
+	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+	str_assign = "[" + dest_reg_assign + dontcare_assign + "]"
+
+	# since this is a consuming instr, we need to compare src reg with rd of previous instr.
+	cond_src_reg = "rs1==a or rs2==a"
+	cond_str_src_reg = ""
+	for i in range(queue_len-1):
+		cond_str_src_reg += " : " + cond_src_reg
+
+	# first instruction's condition check will always be don't care, rest all will be checking the source reg
+	dontcare_cond = dont_care
+
+	# since its a WAR, we need to check the destination register of last
+	# instruction if they are equal to any of source reg of first instr.
+	dest_reg_cond = " : rd==a or rd==b"
+
+	str_cond = "[" + dontcare_cond + cond_str_src_reg + dest_reg_cond + "]"
+
+	# create the final cross_comb_str
+	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
+	print_coverpoint(label_name, cross_comb_str)
 
 def add_mul_ncwar():
 	label_name = "add_mul_ncwar"
+
+	# since, read is happening first followed by write -- WAR -- we will assign the source reg(s) to a/b.
+	dest_reg_assign = "a=rs1; b=rs2 : "
+
+	# rest of the assigns will be don't care.
+	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+	str_assign = "[" + dest_reg_assign + dontcare_assign + "]"
+
+	# since this is a non-consuming instr, result of prev instruction doesn't matter.
+	dontcare_cond = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+
+	# since its a WAR, we need to check the destination register of last
+	# instruction if they are equal to any of source reg of first instr.
+	dest_reg_cond = " : rd==a or rd==b"
+
+	str_cond = "[" + dontcare_cond + dest_reg_cond + "]"
+
+	# create the final cross_comb_str
+	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
+	print_coverpoint(label_name, cross_comb_str)
 
 
 def add_mul_cwaw():
 	label_name = "add_mul_cwaw"
 
+	# since, write is happening first followed by write -- WAW -- we will assign the source reg(s) to a/b.
+	dest_reg_assign = "a=rd : "
+
+	# rest of the assigns will be don't care.
+	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+	str_assign = "[" + dest_reg_assign + dontcare_assign + "]"
+
+	# first instruction's condition check will always be don't care, rest all will be checking the source reg
+	dontcare_cond = dont_care
+
+	# since this is a consuming inst, we need to compare src reg with rd of previous instr.
+	cond_src_reg = "rs1==a or rs2==a"
+	cond_str_src_reg = ""
+	for i in range(queue_len-1):
+		cond_str_src_reg += " : " + cond_src_reg
+
+	# since its a WAW, we need to check the destination register of last
+	# instruction if they are equal to any of source reg of first instr.
+	dest_reg_cond = " : rd==a"
+
+	str_cond = "[" + dontcare_cond + cond_str_src_reg + dest_reg_cond + "]"
+
+	# create the final cross_comb_str
+	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
+	print_coverpoint(label_name, cross_comb_str)
+
 
 def add_mul_ncwaw():
 	label_name = "add_mul_ncwaw"
+
+	# since, write is happening first followed by write -- WAW -- we will assign the source reg(s) to a/b.
+	dest_reg_assign = "a=rd : "
+
+	# rest of the assigns will be don't care.
+	dontcare_assign = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+	str_assign = "[" + dest_reg_assign + dontcare_assign + "]"
+
+	# since this is a non-consuming instr, result of prev instruction doesn't matter.
+	dontcare_cond = ' : '.join([item for item in dont_care for i in range(queue_len-1)])
+
+	# since its a WAW, we need to check the destination register of last
+	# instruction if they are equal to any of source reg of first instr.
+	dest_reg_cond = " : rd==a"
+
+	str_cond = "[" + dontcare_cond + dest_reg_cond + "]"
+
+	# create the final cross_comb_str
+	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
+	print_coverpoint(label_name, cross_comb_str)
 
 
 if __name__ == "__main__":
