@@ -56,13 +56,18 @@ def add_mul_craw():
 	# since this is a consuming instr, we need to compare src reg with rd of previous instr.
 	cond_src_reg = "rs1==a or rs2==a"
 	cond_str_src_reg = ""
-	for i in range(queue_len-1):
+	for i in range(queue_len-2):
 		cond_str_src_reg += " : " + cond_src_reg
 
 	# first instruction's condition check will always be don't care, rest all will be checking the source reg
 	dontcare_cond = dont_care
 
-	str_cond = "[" + dontcare_cond + cond_str_src_reg + "]"
+	cond_dest_reg = "rs1==a or rs2==a"
+	cond_str_dest_reg = ""
+	for i in range(1):
+		cond_str_src_reg += " : " + cond_src_reg
+
+	str_cond = "[" + dontcare_cond + cond_str_src_reg + cond_str_dest_reg + "]"
 
 	# create the final cross_comb_str
 	cross_comb_str = str_ops + " :: " + str_assign + " :: " + str_cond
@@ -107,7 +112,7 @@ def add_mul_cwar():
 	# since this is a consuming instr, we need to compare src reg with rd of previous instr.
 	cond_src_reg = "rs1==a or rs2==a"
 	cond_str_src_reg = ""
-	for i in range(queue_len-1):
+	for i in range(queue_len-2):
 		cond_str_src_reg += " : " + cond_src_reg
 
 	# first instruction's condition check will always be don't care, rest all will be checking the source reg
@@ -163,7 +168,7 @@ def add_mul_cwaw():
 	# since this is a consuming inst, we need to compare src reg with rd of previous instr.
 	cond_src_reg = "rs1==a or rs2==a"
 	cond_str_src_reg = ""
-	for i in range(queue_len-1):
+	for i in range(queue_len-2):
 		cond_str_src_reg += " : " + cond_src_reg
 
 	# since its a WAW, we need to check the destination register of last
