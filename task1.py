@@ -227,7 +227,7 @@ def add_mul_crar():
 
 	# since its a RAR, we need to check the source reg of last
 	# instruction if they are equal to any of source reg of first instr.
-	cond_dest_reg = " : (rs1==a and rs2==b) or (rs1==b and rs2==a)"
+	cond_dest_reg = " : (rs1==a or rs2==a or rs1==b or rs2==b)"
 
 	str_cond = "[" + dontcare_cond + cond_str_src_reg + cond_dest_reg + "]"
 
@@ -251,7 +251,7 @@ def add_mul_ncrar():
 
 	# since its a RAR, we need to check the source reg of last
 	# instruction if they are equal to any of source reg of first instr.
-	cond_dest_reg = " : (rs1==a and rs2==b) or (rs1==b and rs2==a)"
+	cond_dest_reg = " : (rs1==a or rs2==a or rs1==b or rs2==b)"
 
 	str_cond = "[" + dontcare_cond + cond_dest_reg + "]"
 
