@@ -3,6 +3,15 @@ The python script task1.py, will generate all the relevant coverpoints, which ca
 
 ---
 
+### Usage:
+```python
+python task1.py
+```
+By default the coverpoint will be generated for `add` and `mul` instructions that are seperated by 2 instructions.
+The `N` in `task1.py` corresponds to the number of instructions between `add` and `mul`. 
+
+---
+
 ### Limitations:
 * The source code, for now, is capabale of generating coverpoints for ADD and MUL instructions only.
 * It is assumed that the queue, that will contain the op codes, have unique first and last operation. For example if the first operation is add, then last should not be add.
