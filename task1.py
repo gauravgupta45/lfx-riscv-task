@@ -35,7 +35,10 @@ dontcare = "?"
 target_instr = "(add,mul)"
 
 dontcare_ops = ' : '.join([item for item in dontcare for i in range(N)])
-str_ops = "[" + target_instr + " : " + dontcare_ops + " : " + target_instr + "]"
+if (N):
+	str_ops = "[" + target_instr + " : " + dontcare_ops + " : " + target_instr + "]"
+else:
+	str_ops = "[" + target_instr + " : " + target_instr + "]"
 
 
 def print_coverpoint(label_name, cross_comb_str):
